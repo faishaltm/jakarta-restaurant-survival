@@ -211,15 +211,36 @@ python scripts/feature_extraction/extract_features_complete_optimized.py
 
 ### Processed Dataset
 
-**File**: `data/processed/features/jakarta_restaurant_features_complete.csv`
+**File**: `jakarta_restaurant_features_complete.csv`
 
 - **Rows**: 72,082 mature restaurants
 - **Columns**: 133 (130 features + 3 meta columns)
-- **Size**: ~150MB
+- **Size**: 89MB
 - **Failure Rate**: 5.5% (3,934 closed, 68,148 active)
 - **Imbalance Ratio**: 17.3:1
 
-**Note**: Due to size (2.5GB total), dataset is NOT included in git repository.
+### 📥 Download Dataset
+
+**⚠️ IMPORTANT**: Dataset is NOT included in this repository due to size (89MB).
+
+**Download from**:
+- 🔗 **Kaggle**: [Jakarta Restaurant Features Dataset](https://www.kaggle.com/datasets/YOUR-USERNAME/jakarta-restaurant-features)
+- 🔗 **Alternative**: [Google Drive Link] (if available)
+
+**After download**:
+```bash
+# Place the file in:
+data/processed/features/jakarta_restaurant_features_complete.csv
+
+# Or use directly in Kaggle notebooks
+```
+
+**To upload your own dataset to Kaggle**:
+1. Go to: https://www.kaggle.com/datasets
+2. Click "New Dataset"
+3. Upload: `jakarta_restaurant_features_complete.csv`
+4. Title: "Jakarta Restaurant Features - Survival Analysis"
+5. Make public and update the link above
 
 ---
 
