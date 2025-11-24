@@ -1,0 +1,162 @@
+# Hyperparameter Tuning Configuration
+# This file defines the search space for systematic hyperparameter optimization
+
+# Experiment tracking
+experiment:
+  name: "jakarta_selatan_survival_tuning"
+  description: "Hyperparameter tuning for POI survival prediction"
+  output_dir: "outputs/hyperparameter_tuning"
+  random_seed: 42
+  n_jobs: -1  # Use all CPU cores
+
+# Cross-validation settings
+cross_validation:
+  enabled: true
+  n_splits: 5
+  stratified: true  # Stratify by event status
+
+# Imbalance handling strategies to test
+imbalance_strategies:
+  - standard
+  - weighted
+  - ipcw
+  - undersampled
+  - hybrid
+
+# Feature engineering hyperparameters
+feature_engineering:
+  # Buffer distances to test (will try different combinations)
+  buffer_distances:
+    search_type: "grid"  # or "manual"
+    options:
+      - [150, 500, 1000, 2000, 5000]  # Default (comprehensive)
+      - [500, 1000, 2000]              # Reduced (faster)
+      - [250, 750, 1500, 3000]         # Alternative spacing
+
+  # Feature selection
+  feature_selection:
+    enabled: true
+    methods:
+      - "all"                    # Use all features
+      - "importance_top_50"      # Top 50 by importance
+      - "importance_top_30"      # Top 30 by importance
+      - "remove_low_variance"    # Remove features with low variance
+    variance_threshold: 0.01
+
+# Random Survival Forest hyperparameters
+random_survival_forest:
+  # Number of trees
+  n_estimators:
+    search_type: "grid"
+    values: [50, 100, 200, 300]
+
+  # Maximum depth
+  max_depth:
+    search_type: "grid"
+    values: [null, 10, 20, 30]  # null = unlimited
+
+  # Minimum samples to split
+  min_samples_split:
+    search_type: "grid"
+    values: [5, 10, 20, 50]
+
+  # Minimum samples per leaf
+  min_samples_leaf:
+    search_type: "grid"
+    values: [3, 5, 10, 20]
+
+  # Maximum features to consider
+  max_features:
+    search_type: "grid"
+    values: ["sqrt", "log2", null]  # null = all features
+
+# Gradient Boosting Survival Analysis hyperparameters
+gradient_boosting_survival:
+  # Number of boosting stages
+  n_estimators:
+    search_type: "grid"
+    values: [50, 100, 200, 300]
+
+  # Learning rate
+  learning_rate:
+    search_type: "grid"
+    values: [0.01, 0.05, 0.1, 0.2]
+
+  # Maximum depth of trees
+  max_depth:
+    search_type: "grid"
+    values: [2, 3, 5, 7]
+
+  # Minimum samples per leaf
+  min_samples_leaf:
+    search_type: "grid"
+    values: [20, 50, 100, 200]
+
+  # Subsample ratio
+  subsample:
+    search_type: "grid"
+    values: [0.7, 0.8, 0.9, 1.0]
+
+  # Maximum features
+  max_features:
+    search_type: "grid"
+    values: ["sqrt", "log2", null]
+
+# Sample weighting hyperparameters (for 'weighted' and 'hybrid' strategies)
+sample_weighting:
+  event_weight_ratio:
+    search_type: "grid"
+    values: [10, 20, 50, 100]
+
+# Undersampling hyperparameters (for 'undersampled' and 'hybrid' strategies)
+undersampling:
+  censored_to_event_ratio:
+    search_type: "grid"
+    values: [0.05, 0.1, 0.2, 0.3]  # 20:1, 10:1, 5:1, 3:1
+
+# Optimization settings
+optimization:
+  # Search method
+  method: "grid_search"  # Options: "grid_search", "random_search", "optuna"
+
+  # For random search
+  random_search:
+    n_iter: 50  # Number of random combinations to try
+
+  # For Optuna (Bayesian optimization)
+  optuna:
+    n_trials: 100
+    timeout: 3600  # 1 hour
+    pruning: true
+
+  # Primary metric to optimize
+  scoring_metric: "c_index_uno"  # Options: c_index_uno, c_index_harrell, ibs, auc
+
+  # Higher is better for c_index and auc, lower for ibs
+  scoring_direction: "maximize"  # or "minimize" for ibs
+
+# Quick test configuration (for debugging)
+quick_test:
+  enabled: false
+  sample_size: 10000  # Use only 10K POIs for quick testing
+  n_estimators: [50]  # Fewer trees
+  cross_validation_splits: 2  # Fewer CV splits
+
+# Best model selection
+model_selection:
+  # Metrics to track
+  metrics:
+    - c_index_uno        # Primary (most robust for imbalanced data)
+    - c_index_harrell    # Standard
+    - integrated_brier_score
+    - auc_6mo
+    - auc_1yr
+    - auc_2yr
+
+  # Save top N models
+  save_top_n: 5
+
+  # Ensemble best models
+  ensemble:
+    enabled: true
+    method: "averaging"  # Simple averaging of predictions

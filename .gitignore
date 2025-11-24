@@ -1,0 +1,264 @@
+# ============================================================================
+# POI Survival Analysis - Git Ignore
+# ============================================================================
+
+# ============================================================================
+# 1. LARGE DATA FILES (DO NOT PUSH!)
+# ============================================================================
+
+# Raw data (2.5GB)
+data/raw/*
+data/processed/*
+!data/processed/.gitkeep
+
+# Outputs and results (3.6GB)
+outputs/*
+!outputs/.gitkeep
+
+# Models (keep small configs, ignore trained models)
+models/*.pkl
+models/*.joblib
+models/*.h5
+models/*.pt
+models/*.pth
+!models/configs/
+
+# Cache files
+cache/
+*.cache
+
+# ============================================================================
+# 2. PYTHON
+# ============================================================================
+
+# Virtual environment
+venv/
+env/
+ENV/
+.venv/
+
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Distribution / packaging
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*/.ipynb_checkpoints/*
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+.python-version
+
+# Environments
+.env
+.env.local
+.env.*.local
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# ============================================================================
+# 3. LOGS AND TEMPORARY FILES
+# ============================================================================
+
+logs/
+*.log
+*.out
+*.err
+
+# Temporary files
+*.tmp
+*.temp
+nul
+*.swp
+*.swo
+*~
+
+# ============================================================================
+# 4. IDE AND EDITORS
+# ============================================================================
+
+# VSCode
+.vscode/
+*.code-workspace
+
+# PyCharm
+.idea/
+*.iml
+*.iws
+.idea_modules/
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+[._]*.s[a-v][a-z]
+[._]*.sw[a-p]
+[._]s[a-rt-v][a-z]
+[._]ss[a-gi-z]
+[._]sw[a-p]
+
+# ============================================================================
+# 5. OPERATING SYSTEM
+# ============================================================================
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# ============================================================================
+# 6. PROJECT SPECIFIC
+# ============================================================================
+
+# Archive folder (old experiments)
+archive/
+
+# API keys and credentials (if any)
+*.key
+*.pem
+credentials.json
+secrets.json
+.env
+config/credentials/*
+
+# Large HTML outputs
+*.html
+!docs/*.html
+
+# CSV files (only keep small samples)
+*.csv
+!data/samples/*.csv
+
+# Pickle files
+*.pkl
+
+# ============================================================================
+# 7. CLAUDE CODE SPECIFIC
+# ============================================================================
+
+# Claude temporary files
+.claude/todos/
+.claude/cache/
+
+# Keep Claude config
+!.claude/CLAUDE.md
+
+# ============================================================================
+# 8. GIT
+# ============================================================================
+
+*.orig
+*.rej
+*.patch
+
+# ============================================================================
+# EXCEPTIONS (Files to KEEP)
+# ============================================================================
+
+# Keep documentation
+!README.md
+!docs/**/*.md
+!STRUCTURE.md
+
+# Keep scripts
+!scripts/**/*.py
+
+# Keep notebooks (code only, outputs will be cleared)
+!notebooks/*.ipynb
+
+# Keep requirements
+!requirements.txt
+
+# Keep configs
+!config/*.yaml
+!config/*.json
+!config/*.toml

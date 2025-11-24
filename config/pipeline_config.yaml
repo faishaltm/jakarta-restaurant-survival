@@ -1,0 +1,322 @@
+# Jakarta Coffee Shop Site Selection - Pipeline Configuration
+# This config allows easy experimentation without code changes
+
+project:
+  name: "Jakarta Coffee Shop Site Selection"
+  version: "1.0.0"
+  random_seed: 42
+
+paths:
+  data_dir: "data/processed"
+  output_dir: "outputs"
+  models_dir: "models"
+  logs_dir: "logs"
+
+  # Input data
+  foursquare_csv: "data/processed/foursquare/jakarta_pois_foursquare_iceberg.csv"
+  osm_geojson: "data/processed/osm/jakarta_pois_osm.geojson"
+  buildings_geojson: "data/processed/buildings/jakarta_buildings_osm.geojson"
+  boundaries_geojson: "data/processed/boundaries/indonesia_adm3.geojson"
+  population_tif: "data/processed/population/indonesia_pop_density_2020_1km.tif"
+
+geographic:
+  # Jakarta bounding box
+  bbox:
+    min_lat: -6.4
+    max_lat: -6.0
+    min_lon: 106.6
+    max_lon: 107.1
+
+  # CRS
+  wgs84_epsg: 4326
+  utm_jakarta_epsg: 32748  # WGS 84 / UTM zone 48S
+
+  # Grid configuration (from literature: 100m x 100m)
+  grid_size_meters: 100
+
+  # Analysis window (from literature: 1000m radius)
+  analysis_window_meters: 1000
+
+poi_categories:
+  # Coffee shop keywords for filtering
+  coffee_keywords:
+    - coffee
+    - café
+    - cafe
+    - kopi
+    - espresso
+    - barista
+    - coffeehouse
+    - coffee shop
+    - kafe
+    - kedai kopi
+
+  # Key POI types for feature engineering
+  poi_types:
+    university:
+      - university
+      - college
+      - kampus
+      - universitas
+      - polytechnic
+      - institut
+
+    office:
+      - office
+      - kantor
+      - corporate
+      - business center
+      - coworking
+
+    mall:
+      - mall
+      - shopping center
+      - department store
+      - plaza
+      - supermarket
+
+    transport:
+      - station
+      - stasiun
+      - terminal
+      - airport
+      - mrt
+      - krl
+      - transjakarta
+      - halte
+      - bus stop
+
+    residential:
+      - apartment
+      - apartemen
+      - residence
+      - housing
+      - perumahan
+      - residential
+      - condominium
+
+    restaurant:
+      - restaurant
+      - restoran
+      - dining
+      - food court
+      - warung
+      - rumah makan
+
+    gym:
+      - gym
+      - fitness
+      - sport center
+      - olahraga
+
+    bank:
+      - bank
+      - atm
+      - financial
+      - insurance
+
+    hospital:
+      - hospital
+      - clinic
+      - klinik
+      - rumah sakit
+      - medical
+      - puskesmas
+
+    school:
+      - school
+      - sekolah
+      - education
+      - pendidikan
+
+feature_engineering:
+  # Buffer distances (from literature: 150m, 500m, 1km, 2km, 12km)
+  buffer_distances_meters:
+    - 150   # Main road proximity (81% shops within this)
+    - 500   # Immediate neighborhood
+    - 1000  # Walking distance
+    - 2000  # Extended catchment
+    - 5000  # District level
+
+  # Proximity features (distance to nearest)
+  proximity_features:
+    enabled: true
+    poi_types:
+      - university
+      - office
+      - mall
+      - transport
+      - residential
+      - hospital
+      - bank
+    include_competitors: true  # Distance to nearest coffee shop
+
+  # Density features (count within buffers)
+  density_features:
+    enabled: true
+    poi_types:
+      - university
+      - office
+      - mall
+      - transport
+      - residential
+      - restaurant
+      - gym
+      - bank
+      - school
+    include_competitors: true
+    include_total_poi: true
+    include_buildings: true
+
+  # Summary statistics features
+  summary_features:
+    enabled: true
+    statistics:
+      - mean
+      - median
+      - std
+      - max
+    attributes:
+      - poi_density
+      - building_density
+
+  # Diversity features
+  diversity_features:
+    enabled: true
+    methods:
+      - shannon_entropy  # POI category diversity
+      - simpson_index    # POI category concentration
+
+  # Population features
+  population_features:
+    enabled: true
+    use_worldpop: true
+    extract_to_points: true
+
+  # Road network features
+  road_features:
+    enabled: true
+    buffer_main_roads: 150  # 81% of coffee shops within 150m
+
+labeling:
+  # Coffee shop success/failure criteria
+  success_criteria:
+    # Use date_closed as primary indicator
+    use_date_closed: true
+
+    # Minimum operation duration (months) to be considered "successful"
+    min_operation_months: 12
+
+    # If ratings available, use as secondary indicator
+    use_ratings: false
+    min_rating: 4.0
+
+    # Date range for training data
+    # Only include shops opened before this date to have enough history
+    cutoff_date: "2023-01-01"
+
+model:
+  # Train-test split
+  test_size: 0.3
+  validation_size: 0.15  # From training set
+  stratify: true
+
+  # Models to train
+  models:
+    random_forest:
+      enabled: true
+      hyperparameters:
+        n_estimators: [100, 200, 300]
+        max_depth: [10, 20, 30, null]
+        min_samples_split: [2, 5, 10]
+        min_samples_leaf: [1, 2, 4]
+        max_features: ["sqrt", "log2"]
+
+    xgboost:
+      enabled: true
+      hyperparameters:
+        n_estimators: [100, 200, 300]
+        max_depth: [3, 5, 7, 9]
+        learning_rate: [0.01, 0.05, 0.1]
+        subsample: [0.8, 0.9, 1.0]
+        colsample_bytree: [0.8, 0.9, 1.0]
+
+    lightgbm:
+      enabled: false
+      hyperparameters:
+        n_estimators: [100, 200, 300]
+        max_depth: [3, 5, 7]
+        learning_rate: [0.01, 0.05, 0.1]
+
+  # Hyperparameter tuning
+  tuning:
+    method: "grid_search"  # or "random_search", "bayesian"
+    cv_folds: 5
+    scoring: "f1"  # or "accuracy", "roc_auc", "precision", "recall"
+    n_jobs: -1
+
+  # Feature selection
+  feature_selection:
+    enabled: true
+    method: "forward"  # or "backward", "rfe"
+    max_features: 30
+    importance_threshold: 0.005  # From literature: >0.5% importance
+
+evaluation:
+  # Metrics to compute
+  metrics:
+    - accuracy
+    - precision
+    - recall
+    - f1
+    - roc_auc
+    - confusion_matrix
+
+  # Feature importance
+  feature_importance:
+    enabled: true
+    methods:
+      - native  # Model's built-in importance
+      - permutation  # Permutation importance
+      - shap  # SHAP values
+
+  # Visualization
+  visualizations:
+    - feature_importance_plot
+    - confusion_matrix
+    - roc_curve
+    - precision_recall_curve
+    - shap_summary_plot
+    - shap_dependence_plots
+    - prediction_map
+
+output:
+  # Save intermediate results
+  save_processed_data: true
+  save_features: true
+  save_predictions: true
+
+  # Formats
+  formats:
+    - csv
+    - geojson
+    - html  # For interactive maps
+
+  # Reporting
+  generate_report: true
+  report_format: "markdown"  # or "html", "pdf"
+
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+  log_to_file: true
+  log_to_console: true
+
+# Experiment tracking
+experiment:
+  track_experiments: true
+  experiment_name: "baseline_v1"
+  tags:
+    - jakarta
+    - coffee_shop
+    - site_selection
+  notes: "Baseline model with all features from literature"

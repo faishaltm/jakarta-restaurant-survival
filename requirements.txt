@@ -1,0 +1,67 @@
+# Core Data Science
+numpy>=1.24.0
+pandas>=2.0.0
+scipy>=1.10.0
+
+# Geospatial Libraries
+geopandas>=0.13.0
+shapely>=2.0.0
+fiona>=1.9.0
+pyproj>=3.5.0
+rtree>=1.0.0
+
+# Spatial Analysis
+osmnx>=1.6.0
+h3>=3.7.6
+geopy>=2.3.0
+
+# Database
+psycopg2-binary>=2.9.6
+sqlalchemy>=2.0.0
+geoalchemy2>=0.14.0
+
+# Machine Learning
+scikit-learn>=1.3.0
+xgboost>=2.0.0
+lightgbm>=4.0.0
+imbalanced-learn>=0.11.0
+
+# ML Interpretability
+shap>=0.42.0
+
+# Spatial Statistics
+pysal>=23.7
+esda>=2.5.0
+mgwr>=2.2.0
+
+# Web APIs & Data Collection
+requests>=2.31.0
+beautifulsoup4>=4.12.0
+selenium>=4.10.0
+python-dotenv>=1.0.0
+
+# Visualization
+matplotlib>=3.7.0
+seaborn>=0.12.0
+plotly>=5.14.0
+folium>=0.14.0
+# keplergl>=0.3.2  # Commented out - installation issue on Python 3.13, not critical for MVP
+
+# Jupyter
+jupyter>=1.0.0
+ipykernel>=6.23.0
+ipywidgets>=8.0.0
+
+# Utilities
+tqdm>=4.65.0
+pyyaml>=6.0
+loguru>=0.7.0
+click>=8.1.0
+joblib>=1.3.0
+
+# Raster Processing
+rasterio>=1.3.0
+
+# Testing (optional but recommended)
+pytest>=7.3.0
+pytest-cov>=4.1.0
